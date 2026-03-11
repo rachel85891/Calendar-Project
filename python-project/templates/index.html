@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comp Calendar | איתור זמינות</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Assistant', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col items-center py-12 px-4">
+
+    <header class="text-center mb-12">
+        <h1 class="text-4xl font-light text-gray-800 tracking-tight">Comp <span class="font-semibold text-blue-600">Calendar</span></h1>
+        <p class="text-gray-500 mt-2">מצא את הזמן המושלם לפגישה הבאה שלך</p>
+    </header>
+
+    <main class="w-full max-w-2xl bg-white rounded-2xl shadow-sm border border-gray-100 p-8 mb-12">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">משתתפים</label>
+                <select id="participants" multiple class="w-full rounded-lg border-gray-200 bg-gray-50 border p-3 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all">
+                    <option value="Alice">Alice</option>
+                    <option value="Jack">Jack</option>
+                    <option value="Bob">Bob</option>
+                </select>
+                <p class="text-xs text-gray-400 mt-1">החזק Ctrl לבחירה מרובה</p>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">משך פגישה (דקות)</label>
+                <input type="number" id="duration" value="60" min="15" step="15"
+                    class="w-full rounded-lg border-gray-200 bg-gray-50 border p-3 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all">
+            </div>
+        </div>
+
+        <button onclick="searchAvailability()"
+            class="w-full mt-8 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+            Search Availability
+        </button>
+    </main>
+
+    <section id="results-container" class="w-full max-w-4xl hidden">
+        <h2 class="text-xl font-semibold text-gray-700 mb-6 border-r-4 border-blue-500 pr-3">חלונות זמן פנויים:</h2>
+        <div id="results-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            </div>
+    </section>
+
+    <div id="status-message" class="text-gray-400 italic"></div>
+
+    <script>
+        async function searchAvailability() {
+            const participants = Array.from(document.getElementById('participants').selectedOptions).map(o => o.value);
+            const duration = document.getElementById('duration').value;
+            const grid = document.getElementById('results-grid');
+            const container = document.getElementById('results-container');
+            const status = document.getElementById('status-message');
+
+            if (participants.length === 0) {
+                alert("אנא בחר לפחות משתתף אחד");
+                return;
+            }
+
+            // איפוס תצוגה
+            grid.innerHTML = '';
+            status.innerText = "מחפש זמנים...";
+            container.classList.add('hidden');
+
+            try {
+                // חיבור לסרבר (יש לוודא שה-API מחזיר JSON)
+                const response = await fetch('/api/availability', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ participants, duration })
+                });
+
+                const data = await response.json();
+
+                if (data.length === 0) {
+                    status.innerText = "לא נמצאו חלונות זמן פנויים.";
+                } else {
+                    status.innerText = "";
+                    container.classList.remove('hidden');
+                    data.forEach(slot => {
+                        const card = `
+                            <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+                                <span class="text-xs font-bold uppercase tracking-wider text-blue-500">Available Slot</span>
+                                <div class="text-2xl font-light text-gray-800 mt-2 tracking-tighter">
+                                    ${slot.start} <span class="text-gray-300 mx-1">—</span> ${slot.end}
+                                </div>
+                            </div>
+                        `;
+                        grid.innerHTML += card;
+                    });
+                }
+            } catch (error) {
+                status.innerText = "שגיאה בחיבור לשרת. וודא שה-Backend רץ.";
+            }
+        }
+    </script>
+</body>
+</html>
