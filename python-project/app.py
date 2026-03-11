@@ -52,34 +52,35 @@ service = AvailabilityService(repository=repo)
 def home():
     return render_template('index.html')
 
-
-# נתיב ה-API שמקבל בקשות מהדף ומחזיר זמנים פנויים
 @app.route('/api/availability', methods=['POST'])
 def get_slots():
     data = request.json
     participants = data.get('participants', [])
     duration = int(data.get('duration', 60))
 
-    available_slots = service.find_available_slots(participants, duration)
+    # עכשיו מקבלים רשימת מילונים עם 'slot' ו-'score'
+    scored_slots = service.find_available_slots(participants, duration)
 
-    # המרת אובייקטי TimeSlot למילון פשוט עבור ה-JSON
     results = [
-        {"start": slot.start_time.strftime("%H:%M"), "end": slot.end_time.strftime("%H:%M")}
-        for slot in available_slots
+        {
+            "start": item["slot"].start_time.strftime("%H:%M"),
+            "end": item["slot"].end_time.strftime("%H:%M"),
+            "score": item["score"]
+        }
+        for item in scored_slots
     ]
     return jsonify(results)
 
-
-# פונקציית ה-Main שביקשת (להרצה מהטרמינל)
 def run_cli_demo():
     print("--- Running CLI Demo ---")
     participants = ["Alice", "Jack"]
     duration = 60
-    print(f"Starting Time of available slots for {participants}:")
-    slots = service.find_available_slots(participants, duration)
-    for slot in slots:
-        print(f"{slot.start_time.strftime('%H:%M')} - {slot.end_time.strftime('%H:%M')}")
-    print("------------------------\n")
+    scored_slots = service.find_available_slots(participants, duration)
+
+    print(f"Recommended slots for {participants}:")
+    for item in scored_slots:
+        s = item["slot"]
+        print(f"{s.start_time.strftime('%H:%M')} - {s.end_time.strftime('%H:%M')} (Score: {item['score']})")
 
 
 if __name__ == "__main__":

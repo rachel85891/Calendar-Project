@@ -83,13 +83,27 @@
                 } else {
                     status.innerText = "";
                     container.classList.remove('hidden');
-                    data.forEach(slot => {
+                    data.forEach((slot, index) => {
+                        // קביעת צבע וטקסט לפי הציון
+                        const isRecommended = index === 0 && slot.score > 130;
+                        const scoreColor = slot.score > 150 ? 'bg-green-100 text-green-700' : 'bg-blue-50 text-blue-600';
+
                         const card = `
-                            <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-                                <span class="text-xs font-bold uppercase tracking-wider text-blue-500">Available Slot</span>
-                                <div class="text-2xl font-light text-gray-800 mt-2 tracking-tighter">
+                            <div class="relative bg-white p-6 rounded-2xl border ${isRecommended ? 'border-blue-500 ring-2 ring-blue-100' : 'border-gray-100'} shadow-sm transition-all hover:scale-105">
+                                ${isRecommended ? '<span class="absolute -top-3 right-4 bg-blue-600 text-white text-[10px] px-3 py-1 rounded-full font-bold uppercase">Best Match</span>' : ''}
+
+                                <div class="flex justify-between items-start mb-4">
+                                    <span class="text-xs font-bold uppercase tracking-widest text-gray-400">Available Slot</span>
+                                    <span class="px-2 py-1 rounded-md text-[10px] font-bold ${scoreColor}">Score: ${slot.score}</span>
+                                </div>
+
+                                <div class="text-3xl font-light text-gray-800 tracking-tighter">
                                     ${slot.start} <span class="text-gray-300 mx-1">—</span> ${slot.end}
                                 </div>
+
+                                <p class="text-xs text-gray-400 mt-4 italic">
+                                    ${slot.score > 150 ? '✨ זמן מצוין לרצף פגישות בבוקר' : 'חלון זמן פנוי'}
+                                </p>
                             </div>
                         `;
                         grid.innerHTML += card;

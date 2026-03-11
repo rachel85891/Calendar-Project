@@ -10,19 +10,42 @@ class AvailabilityService:
         self.WORK_DAY_START = time(7, 0)
         self.WORK_DAY_END = time(19, 0)
 
-    def find_available_slots(self, person_list: List[str], duration_minutes: int) -> List[TimeSlot]:
-        # 1. איסוף כל האירועים הרלוונטיים
+    def find_available_slots(self, person_list, duration_minutes):
         all_events = self.repository.load_events()
-        relevant_slots = [
-            e.time_slot for e in all_events
-            if e.participant_name in person_list
-        ]
+        relevant_events = [e for e in all_events if e.participant_name in person_list]
+        relevant_slots = [e.time_slot for e in relevant_events]
 
-        # 2. מיזוג חפיפות
         merged_occupied = self._merge_slots(relevant_slots)
+        gaps = self._identify_gaps(merged_occupied, duration_minutes)
 
-        # 3. מציאת רווחים (Gaps)
-        return self._identify_gaps(merged_occupied, duration_minutes)
+        scored_results = []
+        for gap in gaps:
+            score = self._calculate_score(gap, relevant_slots)
+            # יוצרים מילון במקום לשנות את האובייקט הקפוא
+            scored_results.append({
+                "slot": gap,
+                "score": score
+            })
+
+        # מיון לפי הציון מהגבוה לנמוך
+        scored_results.sort(key=lambda x: x["score"], reverse=True)
+
+        return scored_results
+
+    def _calculate_score(self, gap, occupied_slots):
+        score = 100  # ציון בסיס
+
+        # בונוס בוקר: לפני 12:00
+        if gap.start_time < time(12, 0):
+            score += 30
+
+        # בונוס רצף: האם חלון הזמן מתחיל בדיוק כשמישהו מסיים פגישה?
+        for occ in occupied_slots:
+            if occ.end_time == gap.start_time:
+                score += 50
+                break  # מספיק שצמוד לפגישה אחת
+
+        return score
 
     def _time_to_minutes(self, t: time) -> int:
         return t.hour * 60 + t.minute
@@ -74,3 +97,4 @@ class AvailabilityService:
             ))
 
         return available_slots
+
