@@ -37,19 +37,36 @@ def main():
 if __name__ == "__main__":
     main()
 """
+import logging
 from flask import Flask, render_template, request, jsonify
 from io_comp import CalendarRepository, AvailabilityService
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler("app.log", encoding='utf-8'),
+        logging.StreamHandler()  # מדפיס גם למסך (הטרמינל)
+    ]
+)
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
 # הגדרת ה-Backend
-repo = CalendarRepository(file_path="resources/calendar.csv")
-service = AvailabilityService(repository=repo)
+try:
+    repo = CalendarRepository(file_path="resources/calendar.csv")
+    service = AvailabilityService(repository=repo)
+    logger.info("Backend services initialized successfully.")
+except Exception as e:
+    logger.critical(f"Failed to initialize backend services: {e}")
+    raise
 
 
 # נתיב ראשי המציג את דף הנחיתה
 @app.route('/')
 def home():
+    logger.info("Home page accessed.")
     return render_template('index.html')
 
 @app.route('/api/availability', methods=['POST'])
@@ -57,6 +74,8 @@ def get_slots():
     data = request.json
     participants = data.get('participants', [])
     duration = int(data.get('duration', 60))
+
+    logger.info(f"API Request: Find slots for {participants} with duration {duration}min")
 
     # עכשיו מקבלים רשימת מילונים עם 'slot' ו-'score'
     scored_slots = service.find_available_slots(participants, duration)
@@ -69,24 +88,27 @@ def get_slots():
         }
         for item in scored_slots
     ]
+
+    logger.info(f"API Response: Found {len(results)} potential slots.")
+
     return jsonify(results)
 
 def run_cli_demo():
-    print("--- Running CLI Demo ---")
+    logger.info("Running CLI Demo...")
     participants = ["Alice", "Jack"]
     duration = 60
     scored_slots = service.find_available_slots(participants, duration)
 
-    print(f"Recommended slots for {participants}:")
+    print(f"\n--- Recommended slots for {participants} ---")
     for item in scored_slots:
         s = item["slot"]
         print(f"{s.start_time.strftime('%H:%M')} - {s.end_time.strftime('%H:%M')} (Score: {item['score']})")
-
+    print("-------------------------------------------\n")
 
 if __name__ == "__main__":
     # הרצת הדוגמה לטרמינל (סעיף 2 ו-4 בבקשה שלך)
     run_cli_demo()
 
     # הרצת שרת האינטרנט (סעיף 5)
-    print("Starting Web Server at http://127.0.0.1:5000")
+    logger.info("Starting Web Server at http://127.0.0.1:5000")
     app.run(debug=True)

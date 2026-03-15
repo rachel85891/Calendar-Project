@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import time
 
 from .TimeSlot import TimeSlot
-@dataclass
+@dataclass(frozen=True)
 class Event:
     """
     מחלקה האחראית על פרטי האירוע והמשתתף.

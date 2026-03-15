@@ -3,19 +3,23 @@ import os
 from datetime import time
 from typing import List
 from ..models import Event,TimeSlot
+from .ICalendarRepository import ICalendarRepository
+import logging
 
-class CalendarRepository:
-    def __init__(self, file_path: str = "calendar.csv"):
+logger = logging.getLogger(__name__)
+
+class CalendarRepository(ICalendarRepository):
+    def __init__(self, file_path: str = "calendar.csv")-> None:
         self.file_path = file_path
 
-    def load_events(self):
-        events = []
+    def load_events(self)-> List[Event]:
+        events: List[Event] = []
         if not os.path.exists(self.file_path):
-            print(f"שגיאה: הקובץ {self.file_path} לא נמצא.")
+            logger.error(f"שגיאה: הקובץ {self.file_path} לא נמצא.")
             return []
 
         # הגדרת שמות העמודות באופן ידני מכיוון שהם חסרים בקובץ
-        column_names = ['participant_name', 'subject', 'start_time', 'end_time']
+        column_names: List[str] = ['participant_name', 'subject', 'start_time', 'end_time']
 
         try:
             with open(self.file_path, mode='r', encoding='utf-8') as file:
@@ -36,9 +40,9 @@ class CalendarRepository:
                         )
                         events.append(event)
                     except (ValueError, TypeError) as e:
-                        print(f"אזהרה: שגיאת נתונים בשורה {row_number}: {e}. השורה דולגה.")
+                        logger.warning(f"אזהרה: שגיאת נתונים בשורה {row_number}: {e}. השורה דולגה.")
         except Exception as e:
-            print(f"שגיאה כללית בקריאת הקובץ: {e}")
+            logger.exception(f"שגיאה כללית בקריאת הקובץ: {e}")
 
         return events
 
