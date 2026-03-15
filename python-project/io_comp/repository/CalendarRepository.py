@@ -9,10 +9,20 @@ import logging
 logger = logging.getLogger(__name__)
 
 class CalendarRepository(ICalendarRepository):
+    """
+    מימוש של ICalendarRepository הקורא נתונים מקובץ CSV.
+    
+    המחלקה מטפלת בפתיחת הקובץ, מיפוי העמודות והמרת הנתונים לאובייקטים מסוג Event.
+    """
     def __init__(self, file_path: str = "calendar.csv")-> None:
         self.file_path = file_path
 
     def load_events(self)-> List[Event]:
+        """
+        קורא את קובץ ה-CSV וממיר כל שורה תקינה לאובייקט Event.
+        
+        במקרה של שגיאות בנתונים או קובץ חסר, המערכת מבצעת רישום ללוג וממשיכה הלאה.
+        """
         events: List[Event] = []
         if not os.path.exists(self.file_path):
             logger.error(f"שגיאה: הקובץ {self.file_path} לא נמצא.")
@@ -28,16 +38,7 @@ class CalendarRepository(ICalendarRepository):
 
                 for row_number, row in enumerate(reader, start=1):
                     try:
-                        # המרת מחרוזת לטיפוס time
-                        start_t = time.fromisoformat(row['start_time'].strip())
-                        end_t = time.fromisoformat(row['end_time'].strip())
-
-                        slot = TimeSlot(start_time=start_t, end_time=end_t)
-                        event = Event(
-                            participant_name=row['participant_name'].strip(),
-                            subject=row['subject'].strip(),
-                            time_slot=slot
-                        )
+                        event : Event = self._map_row_to_event(row)
                         events.append(event)
                     except (ValueError, TypeError) as e:
                         logger.warning(f"אזהרה: שגיאת נתונים בשורה {row_number}: {e}. השורה דולגה.")

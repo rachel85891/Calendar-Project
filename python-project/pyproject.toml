@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "io_comp_scheduler"
+version = "0.1.0"
+description = "מערכת לניהול וזימון תורים המבוססת על זמינות משתתפים"
+readme = "MY_README.md"
+authors = [{name = "Your Name", email = "your.email@example.com"}]
+requires-python = ">=3.8"
+dependencies = [
+    "Flask",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-mock",
+]
+
+[tool.pytest.ini_options]
+# הגדרות עבור pytest
+testpaths = ["tests"]
+python_files = "test_*.py"
+# מאפשר ל-pytest למצוא את המודולים שלך בקלות
+pythonpath = ["."]
+
+[tool.setuptools]
+# מבטיח שכל תתי-התיקיות (models, repository וכו') ייכללו בחבילה
+packages = {find = {}}

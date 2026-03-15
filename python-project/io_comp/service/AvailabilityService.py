@@ -6,14 +6,37 @@ from ..repository.ICalendarRepository import ICalendarRepository
 
 logger = logging.getLogger(__name__)
 
+DEFAULT_WORK_DAY_START = time(7, 0)
+DEFAULT_WORK_DAY_END = time(19, 0)
+
 class AvailabilityService:
+    """
+    שירות לניהול וחישוב זמינות ביומנים.
+    
+    השירות משתמש ב-Repository כדי לקבל נתונים ומספק לוגיקה למציאת 
+    חלונות זמן פנויים עבור קבוצת משתתפים.
+    """
     def __init__(self, repository: ICalendarRepository):
         self.repository = repository
-        self.WORK_DAY_START = time(7, 0)
-        self.WORK_DAY_END = time(19, 0)
+        self.WORK_DAY_START = DEFAULT_WORK_DAY_START
+        self.WORK_DAY_END = DEFAULT_WORK_DAY_END
         logger.info("AvailabilityService initialized.")
 
     def find_available_slots(self, person_list:List[str], duration_minutes:int):
+        """
+        מוצאת חלונות זמן פנויים המשותפים לכל המשתתפים ברשימה.
+        
+        הפונקציה טוענת את כל האירועים, מסננת את הרלוונטיים, מזהה פערים (Gaps) 
+        בלוח הזמנים ומדרגת אותם לפי ציון אופטימיזציה.
+
+        Args:
+            person_list (List[str]): רשימת שמות המשתתפים שצריכים להשתתף בפגישה.
+            duration_minutes (int): משך הפגישה המבוקש בדקות.
+
+        Returns:
+            List[Dict[str, Any]]: רשימה של מילונים הממוינת לפי הציון (Score) מהגבוה לנמוך. 
+            כל מילון מכיל אובייקט TimeSlot וציון מספרי.
+        """
         logger.info(f"Starting availability search for {len(person_list)} persons, duration: {duration_minutes} min.")
 
         all_events = self.repository.load_events()
@@ -79,6 +102,20 @@ class AvailabilityService:
         return time(hour=m // 60, minute=m % 60)
 
     def _merge_slots(self, slots: List[TimeSlot]) -> List[Tuple[int, int]]:
+        """
+        ממזגת רשימה של חלונות זמן תפוסים לרשימה של טווחים מאוחדים.
+        
+        הפונקציה מטפלת בחפיפות בין פגישות של משתתפים שונים כדי ליצור
+        תמונה אחת של מתי "הקבוצה" תפוסה.
+
+        Args:
+            slots (List[TimeSlot]): רשימת חלונות זמן גולמיים.
+
+        Returns:
+            List[Tuple[int, int]]: רשימת טווחים (התחלה, סוף) בדקות מתחילת היום, 
+            ללא חפיפות.
+        """
+
         if not slots:
             return []
 

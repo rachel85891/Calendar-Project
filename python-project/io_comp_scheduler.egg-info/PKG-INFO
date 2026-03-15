@@ -1,0 +1,14 @@
+Metadata-Version: 2.4
+Name: io_comp_scheduler
+Version: 0.1.0
+Summary: מערכת לניהול וזימון תורים המבוססת על זמינות משתתפים
+Home-page: https://comp.io
+Author-email: Your Name <your.email@example.com>
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: Flask
+Provides-Extra: dev
+Requires-Dist: pytest; extra == "dev"
+Requires-Dist: pytest-mock; extra == "dev"
+Dynamic: home-page
+Dynamic: requires-python

@@ -84,3 +84,18 @@ def test_participant_with_no_events(mock_service):
     # צריכים להיות רווחים לפני (7-10) ואחרי (11-19)
     assert any(slot.start_time == time(7, 0) and slot.end_time == time(10, 0) for slot in results)
     assert any(slot.start_time == time(11, 0) and slot.end_time == time(19, 0) for slot in results)
+
+# --- טסט 5: לוח ריק לחלוטין (כולם פנויים כל היום) ---
+def test_all_participants_empty_calendars(mock_service):
+    service, mock_repo = mock_service
+
+    # אין אירועים בכלל ב-Repository
+    mock_repo.load_events.return_value = []
+
+    # מחפשים פגישה של שעה עבור Alice ו-Bob
+    results = service.find_available_slots(["Alice", "Bob"], 60)
+
+    # התוצאה צריכה להיות חלון אחד יחיד שמתחיל בתחילת היום ומסתיים בסופו
+    assert len(results) == 1
+    assert results[0].start_time == time(7, 0)
+    assert results[0].end_time == time(19, 0)

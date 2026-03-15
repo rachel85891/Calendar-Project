@@ -27,3 +27,45 @@
 2026-03-15 14:06:52,345 - io_comp.service.AvailabilityService - INFO - Search completed. Found 4 slots. Best slot: 09:40:00-13:00:00 with score 180
 2026-03-15 14:06:52,347 - __main__ - INFO - API Response: Found 4 potential slots.
 2026-03-15 14:06:52,349 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2026 14:06:52] "POST /api/availability HTTP/1.1" 200 -
+2026-03-15 14:09:06,593 - __main__ - INFO - API Request: Find slots for ['Bob'] with duration 60min
+2026-03-15 14:09:06,594 - io_comp.service.AvailabilityService - INFO - Starting availability search for 1 persons, duration: 60 min.
+2026-03-15 14:09:06,595 - io_comp.service.AvailabilityService - INFO - Identified 4 potential gaps.
+2026-03-15 14:09:06,596 - io_comp.service.AvailabilityService - INFO - Search completed. Found 4 slots. Best slot: 11:30:00-13:00:00 with score 180
+2026-03-15 14:09:06,597 - __main__ - INFO - API Response: Found 4 potential slots.
+2026-03-15 14:09:06,599 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2026 14:09:06] "POST /api/availability HTTP/1.1" 200 -
+2026-03-15 14:09:14,129 - __main__ - INFO - API Request: Find slots for ['Bob'] with duration 75min
+2026-03-15 14:09:14,129 - io_comp.service.AvailabilityService - INFO - Starting availability search for 1 persons, duration: 75 min.
+2026-03-15 14:09:14,131 - io_comp.service.AvailabilityService - INFO - Identified 2 potential gaps.
+2026-03-15 14:09:14,131 - io_comp.service.AvailabilityService - INFO - Search completed. Found 2 slots. Best slot: 11:30:00-13:00:00 with score 180
+2026-03-15 14:09:14,132 - __main__ - INFO - API Response: Found 2 potential slots.
+2026-03-15 14:09:14,134 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2026 14:09:14] "POST /api/availability HTTP/1.1" 200 -
+2026-03-15 14:09:23,343 - __main__ - INFO - API Request: Find slots for ['Jack'] with duration 75min
+2026-03-15 14:09:23,343 - io_comp.service.AvailabilityService - INFO - Starting availability search for 1 persons, duration: 75 min.
+2026-03-15 14:09:23,344 - io_comp.service.AvailabilityService - INFO - Identified 3 potential gaps.
+2026-03-15 14:09:23,344 - io_comp.service.AvailabilityService - INFO - Search completed. Found 3 slots. Best slot: 09:40:00-13:00:00 with score 180
+2026-03-15 14:09:23,345 - __main__ - INFO - API Response: Found 3 potential slots.
+2026-03-15 14:09:23,346 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2026 14:09:23] "POST /api/availability HTTP/1.1" 200 -
+2026-03-15 14:11:01,088 - __main__ - INFO - API Request: Find slots for ['Alice', 'Jack', 'Bob'] with duration 75min
+2026-03-15 14:11:01,088 - io_comp.service.AvailabilityService - INFO - Starting availability search for 3 persons, duration: 75 min.
+2026-03-15 14:11:01,090 - io_comp.service.AvailabilityService - INFO - Identified 2 potential gaps.
+2026-03-15 14:11:01,090 - io_comp.service.AvailabilityService - INFO - Search completed. Found 2 slots. Best slot: 11:30:00-13:00:00 with score 180
+2026-03-15 14:11:01,092 - __main__ - INFO - API Response: Found 2 potential slots.
+2026-03-15 14:11:01,092 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2026 14:11:01] "POST /api/availability HTTP/1.1" 200 -
+2026-03-15 14:23:59,613 - werkzeug - INFO -  * Detected change in 'c:\\Users\\racheli\\Documents\\רחלי- לימודים\\יד\\Practicode\\calendar_project\\python-project\\io_comp\\repository\\CalendarRepository.py', reloading
+2026-03-15 14:23:59,718 - werkzeug - INFO -  * Restarting with stat
+2026-03-15 14:24:02,270 - io_comp.service.AvailabilityService - INFO - AvailabilityService initialized.
+2026-03-15 14:24:02,271 - __main__ - INFO - Backend services initialized successfully.
+2026-03-15 14:24:02,272 - __main__ - INFO - Running CLI Demo...
+2026-03-15 14:24:02,272 - io_comp.service.AvailabilityService - INFO - Starting availability search for 2 persons, duration: 60 min.
+2026-03-15 14:24:02,272 - io_comp.repository.CalendarRepository - ERROR - שגיאה כללית בקריאת הקובץ: name 'ev' is not defined
+Traceback (most recent call last):
+  File "c:\Users\racheli\Documents\רחלי- לימודים\יד\Practicode\calendar_project\python-project\io_comp\repository\CalendarRepository.py", line 31, in load_events
+    ev
+NameError: name 'ev' is not defined
+2026-03-15 14:24:02,273 - io_comp.service.AvailabilityService - INFO - Identified 1 potential gaps.
+2026-03-15 14:24:02,273 - io_comp.service.AvailabilityService - INFO - Search completed. Found 1 slots. Best slot: 07:00:00-19:00:00 with score 130
+2026-03-15 14:24:02,274 - __main__ - INFO - Starting Web Server at http://127.0.0.1:5000
+2026-03-15 14:24:02,383 - werkzeug - WARNING -  * Debugger is active!
+2026-03-15 14:24:02,385 - werkzeug - INFO -  * Debugger PIN: 843-622-102
+2026-03-15 14:24:03,419 - werkzeug - INFO -  * Detected change in 'c:\\Users\\racheli\\Documents\\רחלי- לימודים\\יד\\Practicode\\calendar_project\\python-project\\io_comp\\repository\\CalendarRepository.py', reloading
+2026-03-15 14:24:03,515 - werkzeug - INFO -  * Restarting with stat
